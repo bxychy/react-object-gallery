@@ -47,8 +47,8 @@ var ImgFigure=React.createClass({
 		}
 		// 如果图片旋转角度有值且不为0
 		if (this.props.arrange.rotate) {
-			(['-moz-', '-ms-', '-webkit-', '']).forEach(function(val) {
-				styleObj[val+'transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
+			(['MozTransform', 'msTransform', 'WebkitTransform', 'transform']).forEach(function(val) {
+				styleObj[val] = 'rotate(' + this.props.arrange.rotate + 'deg)';
 			}.bind(this));
 		}
 		
@@ -70,6 +70,28 @@ var ImgFigure=React.createClass({
 		)
 	}
 });
+
+let ControllerUnit = React.createClass({
+	// 控制组件点击处理函数
+	handleClick(e) {
+		if (!this.props.arrange.isCenter) {
+			this.props.center();
+		} else {
+			this.props.inverse();
+		}
+		e.stopPropagation();
+		e.preventDefault();
+	},
+
+	render: function() {
+		let controllerUnitsClassName = 'controller-unit';
+		controllerUnitsClassName += (this.props.arrange.isCenter) ? ' is-center' : '';
+		controllerUnitsClassName += (this.props.arrange.isInverse) ? ' is-inverse' : '';
+		return (
+			<span className={controllerUnitsClassName} onClick={this.handleClick}></span>
+		);
+	}
+})
 
 class App extends Component{
 	constructor(props) {
@@ -236,40 +258,42 @@ class App extends Component{
 		
 		this.rearRange(0);
 	}
-  render() {
-  	let controllerUnits = [], // 定义导航点数组			
-				imgFigures = []; // 定义图片数组，遍历图片信息，把图片信息增加到数组里
-			
-		imageDatas.forEach(function(item,index){
-			// 图片的初始位置
-			if (!this.state.imgsArrangeArr[index]) {
-				this.state.imgsArrangeArr[index] = {
-					pos: {
-						left: 0,
-						top: 0
-					},
-					rotate: 0,
-					isInverse: false,
-					isCenter: false
+	render(){
+	  	let controllerUnits = [], // 定义导航点数组			
+			imgFigures = []; // 定义图片数组，遍历图片信息，把图片信息增加到数组里
+				
+			imageDatas.forEach(function(item,index){
+				// 图片的初始位置
+				if (!this.state.imgsArrangeArr[index]) {
+					this.state.imgsArrangeArr[index] = {
+						pos: {
+							left: 0,
+							top: 0
+						},
+						rotate: 0,
+						isInverse: false,
+						isCenter: false
+					}
 				}
-			}
-			console.log(item,index);
-			imgFigures.push(
-				<ImgFigure data={item} key={index} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)} />
-			)
-		}.bind(this))
+			//data: 定义ImgFigure的属性，可以随便定义：test\dat都行
+			//把函数内部的this指向函数外部的this(component对象实例)
+				imgFigures.push(
+					<ImgFigure data={item} key={index} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)} />
+				)
+				controllerUnits.push(<ControllerUnit  key={index}  arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)} />);
+			}.bind(this))
 			
-    return(
-      	<section className="stage" ref="stage">
-	        <section className="img-sec">
-	        	{imgFigures}
-	        </section>
-	        <nav className="controller-nav">
-	        	{controllerUnits}
-	        </nav>
-      	</section>
-    );
-  }
+    	return(
+	      	<section className="stage" ref="stage">
+		        <section className="img-sec">
+		        	{imgFigures}
+		        </section>
+		        <nav className="controller-nav">
+		        	{controllerUnits}
+		        </nav>
+	      	</section>
+    	);
+  	}
 }
 
 export default App;
