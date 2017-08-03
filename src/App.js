@@ -83,7 +83,7 @@ let ControllerUnit = React.createClass({
 		e.preventDefault();
 	},
 
-	render: function() {
+	render(){
 		let controllerUnitsClassName = 'controller-unit';
 		controllerUnitsClassName += (this.props.arrange.isCenter) ? ' is-center' : '';
 		controllerUnitsClassName += (this.props.arrange.isInverse) ? ' is-inverse' : '';
@@ -280,7 +280,9 @@ class App extends Component{
 				imgFigures.push(
 					<ImgFigure data={item} key={index} ref={'imgFigure' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)} />
 				)
-				controllerUnits.push(<ControllerUnit  key={index}  arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)} />);
+				controllerUnits.push(
+					<ControllerUnit  key={index}  arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)} />
+				);
 			}.bind(this))
 			
     	return(
